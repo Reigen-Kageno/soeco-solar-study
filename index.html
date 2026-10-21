@@ -149,6 +149,47 @@
     .chart svg{min-width:660px}
     .summary{max-width:none}
   }
+  /* ---------- client view modal ---------- */
+  .cvbtn{margin-left:auto;font:inherit;font-size:12px;font-weight:600;padding:6px 13px;
+         border-radius:7px;border:1px solid #3a434f;background:#1c2229;color:var(--sun);
+         cursor:pointer;white-space:nowrap}
+  .cvbtn:hover{background:#242c36;border-color:var(--sun)}
+
+  .cv{position:fixed;inset:0;z-index:120;background:rgba(6,8,11,.86);
+      -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+      display:none;padding:22px;overflow:auto}
+  .cv.on{display:flex;align-items:flex-start;justify-content:center}
+  .cv-card{position:relative;width:100%;max-width:640px;margin:auto}
+  .cv .summary{max-width:none;margin:0;background:#12171d;border-color:#39434f;
+               box-shadow:0 24px 70px rgba(0,0,0,.6);padding:24px 26px}
+  .cv .summary .sh b{font-size:19px}
+  .cv .srow .sk{font-size:14.5px}
+  .cv .srow .sv{font-size:17px}
+  .cv .srow.tot .sv{font-size:25px}
+  .cv .srow.gain .sv{font-size:22px}
+  .cv .sfoot{font-size:12.5px}
+  .cv-close{position:absolute;top:-13px;right:-8px;z-index:2;width:34px;height:34px;
+            border-radius:50%;border:1px solid #3a434f;background:#1c2229;color:var(--ink);
+            font-size:15px;line-height:1;cursor:pointer}
+  .cv-close:hover{background:#2a333d}
+  .cv .note{margin:16px 0 0}
+  @media(max-width:600px){.cv{padding:12px}.cv .summary{padding:18px}.cv-close{top:-11px;right:0}}
+
+  /* ---------- collapsible blocks ---------- */
+  details.acc{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+              margin:12px 0;overflow:hidden}
+  details.acc>summary{cursor:pointer;padding:12px 16px;font-size:13px;font-weight:600;
+                      color:var(--mut);list-style:none;display:flex;justify-content:space-between;
+                      align-items:center;gap:12px}
+  details.acc>summary::-webkit-details-marker{display:none}
+  details.acc>summary::after{content:'+';font-family:var(--mono);font-size:15px;color:var(--mut2)}
+  details.acc[open]>summary{color:var(--ink);border-bottom:1px solid var(--line)}
+  details.acc[open]>summary::after{content:'−'}
+  details.acc>summary:hover{color:var(--ink)}
+  details.acc>summary:focus-visible{outline:2px solid var(--sun);outline-offset:-2px}
+  details.acc .note{margin:12px 16px}
+  details.acc .kpi4{margin:14px 16px}
+
   .leg{display:flex;gap:14px;font-size:11px;color:var(--mut);margin-top:8px;flex-wrap:wrap}
   .leg span{display:flex;align-items:center;gap:5px}
   .leg i{width:9px;height:9px;border-radius:2px;display:inline-block}
@@ -174,6 +215,7 @@
   <div class="in">
     <h1>Étude solaire — Bâtiment SOECO</h1>
     <span class="where">Dakar · 14,72°N 17,47°O · inclinaison 17° · productible PVGIS</span>
+    <button class="cvbtn" id="cvbtn" type="button">Vue client</button>
   </div>
   <div class="readout">
     <div><div class="k">Couverture solaire</div><div class="v" id="r-cov">—</div></div>
@@ -237,26 +279,8 @@
   <!-- ================= MAIN ================= -->
   <main>
 
-    <section>
-      <h2 class="sec">Le chiffrage en un coup d'œil</h2>
-      <p class="lede">Déplacez les paramètres : les graphiques et les chiffres se recalculent.
-        Tout est en FCFA, hors subvention, avec un financement en échéances égales sans intérêt.</p>
-
-      <div class="summary" id="summary">
-        <div class="sh"><b>Bâtiment SOECO — Dakar</b><span id="s-tag"></span></div>
-        <div class="srow"><span class="sk">Facture SENELEC aujourd'hui</span>
-          <span class="sv" id="s-today">—</span></div>
-        <div class="srow"><span class="sk">Mensualité solaire</span>
-          <span class="sv" id="s-pay">—</span></div>
-        <div class="srow"><span class="sk">+ Facture SENELEC restante</span>
-          <span class="sv" id="s-resid">—</span></div>
-        <div class="srow tot"><span class="sk">Vous payez au total</span>
-          <span class="sv" id="s-total">—</span></div>
-        <div class="srow gain"><span class="sk">Vous économisez</span>
-          <span class="sv" id="s-save">—</span></div>
-        <div class="sfoot" id="s-foot"></div>
-      </div>
-
+    <details class="acc">
+      <summary>Chiffrage détaillé</summary>
       <div class="kpi4">
         <div><div class="k">Production PV</div><div class="v" id="r-prod">—</div><div class="u">kWh/an</div></div>
         <div><div class="k">Énergie solaire utilisée</div><div class="v" id="r-used">—</div><div class="u">kWh/an</div></div>
@@ -267,9 +291,7 @@
         <div><div class="k">Prix de vente</div><div class="v" id="r-sale">—</div><div class="u">FCFA</div></div>
         <div><div class="k">Rendement du capital</div><div class="v" id="r-roc">—</div><div class="u">% / an</div></div>
       </div>
-
-      <div class="note money" id="verdict"></div>
-    </section>
+    </details>
 
     <section>
       <h2 class="sec">Production contre consommation, mois par mois</h2>
@@ -374,8 +396,8 @@
       </div>
     </section>
 
-    <section>
-      <h2 class="sec">Notes pour l'installateur</h2>
+    <details class="acc">
+      <summary>Notes pour l'installateur</summary>
       <div class="note">
         <span class="lead">Onduleur triphasé, en parallèle du réseau</span>
         Le bâtiment est alimenté en triphasé alors que toutes les charges sont monophasées. Il faut
@@ -403,10 +425,10 @@
           <li>Vérifier la section du neutre et l'équilibrage des phases avant raccordement.</li>
         </ul>
       </div>
-    </section>
+    </details>
 
-    <section>
-      <h2 class="sec">Méthode, données et limites</h2>
+    <details class="acc">
+      <summary>Méthode, données et limites</summary>
 
       <div class="note warn">
         <span class="lead">Le compteur SENELEC sous-compte — établi</span>
@@ -455,9 +477,30 @@
         Structure tarifaire SENELEC reconstituée et vérifiée sur factures (±0,61 %).
         Financement coût + marge, sans intérêt. — 20 octobre 2026.
       </div>
-    </section>
+    </details>
 
   </main>
+</div>
+
+<div class="cv" id="clientview" role="dialog" aria-modal="true" aria-label="Vue client">
+  <div class="cv-card">
+    <button class="cv-close" id="cvclose" type="button" aria-label="Fermer">✕</button>
+    <div class="summary" id="summary">
+      <div class="sh"><b>Bâtiment SOECO — Dakar</b><span id="s-tag"></span></div>
+      <div class="srow"><span class="sk">Facture SENELEC aujourd'hui</span>
+        <span class="sv" id="s-today">—</span></div>
+      <div class="srow"><span class="sk">Mensualité solaire</span>
+        <span class="sv" id="s-pay">—</span></div>
+      <div class="srow"><span class="sk">+ Facture SENELEC restante</span>
+        <span class="sv" id="s-resid">—</span></div>
+      <div class="srow tot"><span class="sk">Vous payez au total</span>
+        <span class="sv" id="s-total">—</span></div>
+      <div class="srow gain"><span class="sk">Vous économisez</span>
+        <span class="sv" id="s-save">—</span></div>
+      <div class="sfoot" id="s-foot"></div>
+    </div>
+    <div class="note money" id="verdict"></div>
+  </div>
 </div>
 
 <div class="mbar" id="mbar">
@@ -1050,6 +1093,22 @@ document.querySelectorAll('#presets button').forEach(b=>{
     document.getElementById('batt').dispatchEvent(new Event('input'));
   });
 });
+
+/* ---------- client view modal ---------- */
+const CV  = document.getElementById('clientview');
+const CVB = document.getElementById('cvbtn');
+const CVC = document.getElementById('cvclose');
+const cvOpen  = function(){ if(CV) CV.classList.add('on'); };
+const cvClose = function(){ if(CV) CV.classList.remove('on'); };
+
+if(CVB) CVB.addEventListener('click', cvOpen);
+if(CVC) CVC.addEventListener('click', cvClose);
+if(CV)  CV.addEventListener('click', function(ev){ if(ev.target === CV) cvClose(); });
+if(typeof document.addEventListener === 'function'){
+  document.addEventListener('keydown', function(ev){
+    if(ev.key === 'Escape') cvClose();
+  });
+}
 
 drawHourly();
 render();
